@@ -22,8 +22,18 @@ public class UserService {
         return data;
     }
 
-    public Mono<User> getById(Long id){
+    public Mono<User> getById(Long id) {
         return data.filter(user -> user.getId().equals(id)).single();
     }
 
+    public Mono<Void> deleteById(Long id) {
+        data = data.filter(user -> !user.getId().equals(id));
+        return Mono.empty();
+    }
+
+    public Mono<User> save(User user) {
+        Mono<User> userMono = Mono.just(user);
+        data = data.concatWith(userMono);
+        return userMono;
+    }
 }

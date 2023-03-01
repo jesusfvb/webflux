@@ -1,10 +1,7 @@
 package com.example.webflux.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,6 +20,16 @@ public class UserController {
     @GetMapping({"/{id}"})
     public Mono<User> getById(@PathVariable String id) {
         return userService.getById(Long.parseLong(id));
+    }
+
+    @PostMapping("{id}")
+    public Mono<Void> deleteById(@PathVariable String id) {
+        return userService.deleteById(Long.parseLong(id));
+    }
+
+    @PostMapping()
+    public Mono<User> save(@RequestBody User user) {
+        return userService.save(user);
     }
 
 }
