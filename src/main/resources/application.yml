@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      database: webflux
+      host: localhost
+      port: 27017

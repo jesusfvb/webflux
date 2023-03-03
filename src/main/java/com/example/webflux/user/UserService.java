@@ -1,39 +1,42 @@
 package com.example.webflux.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
-    public Flux<User> data = Flux.just(
-            new User(1L, "John", "john"),
-            new User(2L, "Jane", "jane"),
-            new User(3L, "Jack", "jack"),
-            new User(4L, "Jill", "jill"),
-            new User(5L, "Jenny", "jenny"),
-            new User(6L, "Jen", "jen"),
-            new User(7L, "Jenifer", "jenifer"),
-            new User(8L, "Jeniffer", "jeniffer")
-    );
+    @Autowired
+    private UserRepository userRepository;
 
     public Flux<User> getAll() {
-        return data;
+        return userRepository.findAll();
     }
 
-    public Mono<User> getById(Long id) {
-        return data.filter(user -> user.getId().equals(id)).single();
+    public Mono<User> save(UserDto user) {
+        User userEntity = new User();
+        userEntity.setName(user.getName());
+        userEntity.setUsername(user.getUsername());
+        return userRepository.save(userEntity);
     }
 
-    public Mono<Void> deleteById(Long id) {
-        data = data.filter(user -> !user.getId().equals(id));
-        return Mono.empty();
+    public Mono<User> getById(String id) {
+        return userRepository.findById(id);
     }
 
-    public Mono<User> save(User user) {
-        Mono<User> userMono = Mono.just(user);
-        data = data.concatWith(userMono);
-        return userMono;
+    public Mono<Void> deleteAllById(List<String> ids) {
+        return userRepository.findAllById(ids).flatMap(userRepository::delete).then();
+    }
+
+    public Mono<User> update(User user) {
+        return userRepository.findById(user.getId()).flatMap(entity -> {
+            entity.setUsername(user.getUsername());
+            entity.setName(user.getName());
+            return userRepository.save(entity);
+        });
     }
 }
