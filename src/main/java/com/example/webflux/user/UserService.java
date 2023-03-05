@@ -13,6 +13,10 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    public Mono<User> getByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public Flux<User> getAll() {
         return userRepository.findAll();
     }
